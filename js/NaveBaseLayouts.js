@@ -65,8 +65,10 @@ Nave.registerLayouts("nvBase",
             var password = obj.password || false;
             var inputType = password ? "password" : "text";
             var labelTag = "";
+            var formGroupTag = "";
             if (label != "") {
                 labelTag = `<label>${label}</label>`;
+                formGroupTag = "class='form-group'";
             }
             var eventTag = "";
             if (action) {
@@ -74,7 +76,7 @@ Nave.registerLayouts("nvBase",
             } else if (update) {
                 eventTag = `${event}="Nave.updateStateValue('${update}', this.value, false)"`
             }
-            return `<div class="form-group">${labelTag}
+            return `<div ${formGroupTag}>${labelTag}
                         <input class="form-control" type="${inputType}" 
                         value="${value}" 
                         ${eventTag} />
@@ -215,7 +217,7 @@ Nave.registerLayouts("nvBase",
         nvTable : function(obj) {
             var headers = obj.headers;
             var rows = obj.rows;
-            var ret = `<table class="table table-condensed">
+            var ret = `<table class="table table-condensed table-striped">
                         <thead>
                             <tr>
                                 ${Nave.reduce(headers, function(header, index) {
@@ -236,9 +238,6 @@ Nave.registerLayouts("nvBase",
             return Nave.reduce(cols, function(col, index) {
                 return `<td>${Nave.renderObject(col, index)}</td>`;
             })
-        },
-        nvRouter : function(obj) {
-            
         }
     }
 )

@@ -1,12 +1,11 @@
 var Nave = (function() {
     var appName = "NaveApp";
-    var logLevel = 0;
     var history = [];
     var state;
     var layouts = {};
     var m_actions = {};
-    var moderators = {};
-    var services = {};
+    var m_services = {};
+    var listeners = {};
     var pages = {};
     return {                 
         
@@ -72,11 +71,11 @@ var Nave = (function() {
                 }
                 if (visible) {
                     var reRender = false;
-                    if (item.reRenderOnChange) {
-                        if (item.reRenderOnChange == "*") {
+                    if (item.trigger) {
+                        if (item.trigger == "*") {
                             reRender = true;
                         } else {
-                            reRender = Nave.checkReRender(item.reRenderOnChange);                
+                            reRender = Nave.checkReRender(item.trigger);                
                         }
                     }
                     // if the component has just become visible, over-ride and render
@@ -127,10 +126,18 @@ var Nave = (function() {
         
         // SERVICES
         registerService : function(serviceId, service) {
-            services[serviceId] = service;
+            m_services[serviceId] = service;
         },
-        service : function(serviceId) {
-            return services[serviceId];
+        services : function(serviceId) {
+            return m_services[serviceId];
+        },
+        
+        // LISTENERS
+        // Listeners are called after a new state is set
+        // They are listen-only, in that any changes they make
+        // to state will be disregarded.
+        registerListener : function(listenerId, listener) {
+            listeners[listenerId] = listener;
         },
         
         // getState returns a copy of the current state                
@@ -143,6 +150,9 @@ var Nave = (function() {
             state = newState;
             console.log("State", state);
             Nave.renderPage(state.nave.page);
+            Nave.each(listeners, function(listener) {
+                listener(state);
+            })
             return Nave.getState();
         },
         // Internal state helper functions - these should not be used externally

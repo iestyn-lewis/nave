@@ -2,11 +2,7 @@
 
 Nave.registerLayouts("nvBase", 
     {
-        nvComponent : function(obj) {
-            var component = obj.component;
-            return `<div class="${component}"></div>`;        
-        },
-        nvLink : function(obj) {
+        nvLink : function(obj) { 
             var onclick = obj.onclick;
             var href = obj.href;
             var text = obj.text;

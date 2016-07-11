@@ -14,8 +14,13 @@ Nave.registerActions('todo', function(state, update) {
             state.todos.splice(index, 1);
             update(state);
         },
+        setEditItem: function(index) {
+            state.editItemIndex = index;
+            update(state);  
+        },
         editItem: function(index, item) {
             state.todos[index] = item;
+            state.editItemIndex = -1;
             update(state);
         }
     }

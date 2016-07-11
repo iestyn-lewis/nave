@@ -2,7 +2,7 @@ var Nave = (function() {
     var appName = "NaveApp";
     var history = [];
     var state;
-    var layouts = {};
+    var m_layouts = {};
     var m_actions = {};
     var m_services = {};
     var listeners = {};
@@ -28,7 +28,7 @@ var Nave = (function() {
             if (oldState) { 
                 newPage = oldState.nave.page != state.nave.page; 
             }
-            var p = pages[pageId](state, layouts);
+            var p = pages[pageId](state);
             var targetDiv = $('.' + appName);
             var ret = Nave.renderObject(p, "app");
             if (targetDiv.html().trim() == "" || newPage) {
@@ -107,7 +107,10 @@ var Nave = (function() {
         // LAYOUTS - template html that can be parameterized
         // at design time - not at runtime
         registerLayouts : function(layoutId, layout) {
-            layouts[layoutId] = layout;
+            m_layouts[layoutId] = layout;
+        },
+        layouts : function(layoutId) {
+            return m_layouts[layoutId];
         },
         
         // ACTIONS - take action on state

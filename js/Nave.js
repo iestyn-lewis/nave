@@ -30,16 +30,19 @@ var Nave = (function() {
             }
             var p = pages[pageId](state);
             var targetDiv = $('.' + appName);
-            var ret = Nave.renderObject(p, "app");
+            var ret = Nave.renderObject(p);
             if (targetDiv.html().trim() == "" || newPage) {
                 targetDiv.html(ret);  
             }
+            // focus elements that are set to focus themselves
+            $("[nv-focus='true']").focus();
         },
-        renderObject : function(item, key, element, style) {
+        renderObject : function(item, element, style) {
             // construct html string 
             element = element || "div";
             style = style || "";
-            var id = ""
+            var key = item.id;
+            var id = "";
             if (key) {
                 id = 'id="' + key + '"';                
             }

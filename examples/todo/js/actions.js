@@ -7,10 +7,12 @@ Nave.registerActions('todo', function(state, update) {
     return {
         addItem: function(item) {
             state.todos.push(item);
-            state.lastItemAdded = item;
             update(state);
         },
         deleteItem: function(index) {
+            if (index == state.editItemIndex) {
+                state.editItemIndex = -1;
+            }
             state.todos.splice(index, 1);
             update(state);
         },
@@ -20,6 +22,12 @@ Nave.registerActions('todo', function(state, update) {
         },
         editItem: function(index, item) {
             state.todos[index] = item;
+            if (state.editItemIndex == index) {
+                state.editItemIndex = -1;            
+            }
+            update(state);
+        },
+        cancelEdit: function() {
             state.editItemIndex = -1;
             update(state);
         }

@@ -43,8 +43,8 @@ Nave.registerLayouts("nvBase",
             var horizontal = obj.horizontal || false;
             var element = horizontal ? "span" : "div";
             var margin = horizontal ? "margin-right: 10px;" : null;
-            var ret = Nave.reduce(form, function(item, key) {
-                return Nave.renderObject(item, key, element, margin);
+            var ret = Nave.reduce(form, function(item) {
+                return Nave.renderObject(item, element, margin);
             })
             if (obj.title) {
                 ret = `<h3>${obj.title}</h3>` + ret;
@@ -55,11 +55,24 @@ Nave.registerLayouts("nvBase",
             var label = obj.label || "";
             var value = obj.value;
             var action = obj.action;
+            var cancel = obj.cancel;
             var update = obj.update;
             var event = obj.event || "onchange";
             var numeric = obj.numeric || false;
             var password = obj.password || false;
             var inputType = password ? "password" : "text";
+            var focusOnCreate = obj.focusOnCreate || false;
+            var selectTextOnFocus = obj.selectTextOnFocus || false;
+            var cursorToEndOnFocus = obj.cursorToEndOnFocus || false;
+            var onFocus = obj.onFocus || "";
+            var focusOnCreateTag = "";
+            if (focusOnCreate) {focusOnCreateTag = 'nv-focus="true"';}
+            var selectTextOnFocusTag = "";
+            if (selectTextOnFocus) {selectTextOnFocusTag = 'onfocus="this.select()"';}
+            var cursorToEndOnFocusTag = "";
+            if (cursorToEndOnFocus) {cursorToEndOnFocusTag = `onfocus="this.selectionStart = this.selectionEnd = this.value.length;"`}
+            var onFocusTag = "";
+            if (onFocus != "") {onFocusTag = `onfocus="${onFocus}"`}
             var labelTag = "";
             var formGroupTag = "";
             if (label != "") {
@@ -75,7 +88,11 @@ Nave.registerLayouts("nvBase",
             return `<div ${formGroupTag}>${labelTag}
                         <input class="form-control" type="${inputType}" 
                         value="${value}" 
-                        ${eventTag} />
+                        ${eventTag}
+                        ${selectTextOnFocusTag}
+                        ${cursorToEndOnFocusTag}
+                        ${focusOnCreateTag}
+                        ${onFocusTag}
                     </div>`;            
         },
         nvTextArea : function(obj) {
@@ -164,7 +181,7 @@ Nave.registerLayouts("nvBase",
                 return `<div role="tabpanel" class="tab-pane fade ${active} in" id="${key}_tab">
                             <div class="col-xs-12">
                                 <p>
-                                ${Nave.renderObject(tab,key)}
+                                ${Nave.renderObject(tab)}
                             </div>
                         </div>`;
             })
@@ -185,7 +202,7 @@ Nave.registerLayouts("nvBase",
                 }
                 return `<div class="col-xs-${column.width}">
                             ${headerText}
-                            ${Nave.renderObject(column, key)}
+                            ${Nave.renderObject(column)}
                         </div>`;
             })
             var ret = `<div class="row">
@@ -223,7 +240,7 @@ Nave.registerLayouts("nvBase",
                         </thead>
                         <tbody>
                             ${Nave.reduce(rows, function(row, index) {
-                                return `${Nave.renderObject(row, index, 'tr')}`;
+                                return `${Nave.renderObject(row, 'tr')}`;
                             })}
                         </tbody>
                        </table>`
@@ -232,7 +249,7 @@ Nave.registerLayouts("nvBase",
         nvTableRow : function(obj) {
             var cols = obj.cols;
             return Nave.reduce(cols, function(col, index) {
-                return `<td>${Nave.renderObject(col, index)}</td>`;
+                return `<td>${Nave.renderObject(col)}</td>`;
             })
         }
     }

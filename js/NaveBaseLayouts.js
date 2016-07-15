@@ -93,6 +93,7 @@ Nave.registerLayouts("nvBase",
                         ${cursorToEndOnFocusTag}
                         ${focusOnCreateTag}
                         ${onFocusTag}
+                         />
                     </div>`;            
         },
         nvTextArea : function(obj) {

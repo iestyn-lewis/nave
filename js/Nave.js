@@ -102,8 +102,21 @@ var Nave = (function() {
         checkReRender : function(path) {
             var oldState = history[history.length - 1];
             if (!oldState) { return true; } 
-            var oldProps = eval('oldState.' + path);
-            var props = eval('state.' + path);
+            var oldProps = "";
+            var props = "";
+            if (path instanceof Array) {
+                var oldPropsArr = Nave.map(path, function(item) {
+                    return "oldState." + item;
+                })
+                oldProps = oldPropsArr.join(" + ");
+                var propsArr = Nave.map(path, function(item) {
+                    return "state." + item;
+                })
+                props = propsArr.join(" + "); 
+            } else {
+                oldProps = eval('oldState.' + path);
+                props = eval('state.' + path);                
+            }
             return !(JSON.stringify(oldProps) === JSON.stringify(props));
         },
         

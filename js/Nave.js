@@ -221,7 +221,7 @@ var Nave = (function() {
                 })
             } else {
                 var ret = {};
-                Object.keys(obj).each(function(key, index) {
+                Object.keys(obj).forEach(function(key, index) {
                     ret[key] = callback(obj[key], key, index);
                 })
                 return ret;
@@ -234,18 +234,42 @@ var Nave = (function() {
             })
             return ret;
         },
-        mapObjToArr : function(obj) {
+        mapObjToArr : function(obj, itemFn) {
             var ret = [];
-            Nave.each(obj, function(item) {
-                ret.push(item);
+            Nave.each(obj, function(item, key) {
+                ret.push(itemFn(item, key));
             })
             return ret;
+        },
+        merge : function(obj1, obj2) {
+            if (obj1 instanceof Array) {
+                Nave.each(obj1, function(item) {
+                    ret.push(item);
+                })
+                Nave.each(obj2, function(item) {
+                    ret.push(item);
+                })
+                return ret;
+            } else {
+                var ret = {};
+                Nave.each(obj1, function(item, key) {
+                    ret[key] = item;
+                });
+                Nave.each(obj2, function(item, key) {
+                    ret[key] = item;
+                })
+                return ret;
+            }
         },
         exists : function(obj, key) {
             return Object.keys(obj).indexOf(key) > -1;
         },
         empty : function(obj) {
-            return !Object.keys(obj).length > 0;
+            if (obj instanceof Array) {
+                return !obj.length > 0;
+            } else {
+                return !Object.keys(obj).length > 0;                
+            }
         },
         keyCount : function(obj) {
             return Object.keys(obj).length;

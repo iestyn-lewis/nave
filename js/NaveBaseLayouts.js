@@ -217,15 +217,19 @@ Nave.registerLayouts("nvBase",
         nvList : function(obj) {
             var header = obj.header || "";
             var list = obj.list;
+            var valueParam = obj.valueParam;
             var headerText = "";
             if (header != "") {
                 headerText = `<h4>${header}</h4>`;
             }
             return `${headerText}
-                    <ul>
-                        ${Nave.reduce(list, function(street, streetIndex) {
-                                return `<li>${street}</li>`; 
-                         })}
+                    <ul>    
+                        ${Nave.reduce(list, function(item, streetIndex) {
+                            if (valueParam) {
+                                item = item[valueParam];
+                            }
+                            return `<li>${item}</li>`; 
+                        })}
                     </ul>`
         },
         nvTable : function(obj) {

@@ -9,7 +9,6 @@ Nave.registerPage('todo', function(state) {
     // We pulled in the Nave base layouts library,
     // and we have some custom layouts too
     var lb = Nave.layouts('nvBase');
-    var lt = Nave.layouts('todo');
     return {
         id: 'todoApp',
         layout: lb.nvForm,

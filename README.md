@@ -42,6 +42,14 @@ When the browser document is ready, you can start the Nave application by settin
 
 ## Installation
 To enable Nave, include the Nave.js file in your HTML page.  You will probably also want to include NaveBaseLayouts.js to take advantage of the default layouts, NaveBaseActions.js to use default actions, and NaveBaseServices.js if you want to use the built in services such as LocalStorage and Firebase.
+## Usage
+1. Include the Nave Library in a script tag.
+2. Optionally, include the Base libraries (Actions, Layouts, and Services)
+3. Include User defined layouts, actions, services and listeners are included.
+4. On the HTML page, create a div with the class name "NaveApp"
+4. On document ready, set an initial state.
+
+# Nave Component Detail
 ## Pages
 Multiple Pages can be registered in your Nave application.  You tell Nave which page you want to render by setting a particular value in the State object:
 ```javascript
@@ -179,16 +187,7 @@ To enable the node to change, either of the following would work:
     trigger: "*",
     text: state.message
 }
-
 ```
-
-## Application Setup
-Nave application bootstrapping is as follows:
-
-1. The Nave library is included.
-2. Optionally, the Base libraries are included (Actions, Layouts, and Services)
-3. User defined layouts, actions, services and listeners are included.
-4. The application is initialized by setting an initial state.
 
 ## Init
 The init file sets initial state on document ready.  A simple init file would be as follows:
@@ -227,4 +226,90 @@ updateFn(state);
 ```
 
 At this point, Nave will rerender the application based on the state. 
+
+# Walkthroughs
+There are several examples in this repository.  Following are walkthroughs for these examples.
+## Hello
+`hello.html`
+Open this file to see the hello world example.  You will see:
+### Head
+In the head we have the external libraries.  Nave utilizes jQuery and Bootstrap:
+```html
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" 
+		integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>	
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" rel="stylesheet">
+```
+
+###Body
+In the body we define the location for Nave to operate, and encapsulate that in a Bootstrap container div:
+
+```html
+<div class="container">
+    <div class="NaveApp"></div>
+</div>
+```
+
+Directly after, we include the Nave libraries, and our own libraries:
+
+```html
+    <!-- The Nave libraries -->
+	<script type="text/javascript" src="../../js/Nave.js"></script>
+    <script type="text/javascript" src="../../js/NaveBaseLayouts.js"></script>
+    <script type="text/javascript" src="../../js/NaveBaseServices.js"></script>
+    
+    <!--  Our own scripts -->
+    <script type="text/javascript" src="js/page.js"></script>
+    <script type="text/javascript" src="js/init.js"></script>
+```
+
+```page.js```
+In this file we register a page with Nave:
+
+```javascript
+Nave.registerPage('hello', function(state) {
+    var lb = Nave.layouts('nvBase');
+    return {
+        id: "hello",
+        layout: lb.nvParagraph,
+        text: state.message
+    }
+})
+```
+
+We are using one of the base layouts from the NaveBaseLayout library.  This layout renders a paragraph, with the text contained in the state.message property.  For reference, here is the nvParagraph function from the NaveBaseLayout library:
+
+```javascript
+nvParagraph : function(obj) {
+    var text = obj.text;
+    var headerText = "";
+    if (obj.header) {
+        headerText = `<label>${obj.header}</label>`;
+    }
+    return `${headerText}<p>${text}</p>`;
+}
+```
+This function returns the snippet of HTML that will be rendered to the page, paramaterized with the text and optional header text.
+
+```init.js```
+
+In this file we construct our initial state, and pass it to Nave:
+
+```javascript
+$(document).ready(function() {
+   // Starting state  
+   var state =  {
+        nave: {
+            page: 'hello'
+        },
+        message: "Hello World!"
+    };
+   // away we go
+   Nave.setState(state);
+});
+```
+Note that the state.nave.page property is set to 'hello', indicating that we want to render a page we registered as hello, and we set the message to display.
+
+We then call Nave.setState to start the application.  Nave will pass the new state to the 'hello' page function and insert the resulting HTML into the NaveApp div.
 

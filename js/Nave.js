@@ -5,7 +5,7 @@ var Nave = (function() {
     var m_layouts = {};
     var m_actions = {};
     var m_services = {};
-    var listeners = {};
+    var m_listeners = {};
     var pages = {};
     return {                 
         
@@ -126,7 +126,12 @@ var Nave = (function() {
             m_layouts[layoutId] = layout;
         },
         layouts : function(layoutId) {
-            return m_layouts[layoutId];
+            var layout = m_layouts[layoutId];
+            if (layout instanceof Function) {
+                return layout();
+            } else {
+                return layout;            
+            }
         },
         
         // ACTIONS - take action on state
@@ -148,7 +153,12 @@ var Nave = (function() {
             m_services[serviceId] = service;
         },
         services : function(serviceId) {
-            return m_services[serviceId];
+            var service =  m_services[serviceId];
+            if (service instanceof Function) {
+                return service();
+            } else {
+                return service;
+            }
         },
         
         // LISTENERS
@@ -156,7 +166,15 @@ var Nave = (function() {
         // They are listen-only, in that any changes they make
         // to state will be disregarded.
         registerListener : function(listenerId, listener) {
-            listeners[listenerId] = listener;
+            m_listeners[listenerId] = listener;
+        },
+        listener : function(listenerId) {
+            var listener = m_listeners[listenerId];
+            if (listener instanceof Function) {
+                return listener();
+            }  else {
+                return listener;
+            }
         },
         
         // getState returns a copy of the current state                
@@ -169,7 +187,7 @@ var Nave = (function() {
             state = newState;
             console.log("State", state);
             Nave.renderPage(state.nave.page);
-            Nave.each(listeners, function(listener) {
+            Nave.each(m_listeners, function(listener) {
                 listener(state);
             })
             return Nave.getState();
@@ -192,6 +210,9 @@ var Nave = (function() {
             return obj ? eval("obj." + prop) : "";
         },
         // Miscellaneous object helpers
+        copy : function(obj) {
+            return JSON.parse(JSON.stringify(obj));
+        },
         reduce : function(obj, callback) {
             if (obj instanceof Array) {
                 return obj.reduce(function(concat, item, index) {
@@ -262,7 +283,11 @@ var Nave = (function() {
             }
         },
         exists : function(obj, key) {
-            return Object.keys(obj).indexOf(key) > -1;
+            if (obj instanceof Array) {
+                return obj.indexOf(key) > - 1;
+            } else {
+                return Object.keys(obj).indexOf(key) > -1;            
+            }
         },
         empty : function(obj) {
             if (obj instanceof Array) {

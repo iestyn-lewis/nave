@@ -5,4 +5,4 @@ Nave.registerActions('nvBase', function(state, updateFn) {
             updateFn(state);
         }
     }
-}
+})

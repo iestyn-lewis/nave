@@ -1,7 +1,7 @@
 // Base Layouts
 
-Nave.registerLayouts("nvBase", 
-    {
+Nave.registerLayouts("nvBase", function() {
+    return {
         nvLink : function(obj) { 
             var onclick = obj.onclick;
             var href = obj.href;
@@ -21,11 +21,18 @@ Nave.registerLayouts("nvBase",
             var text = obj.text;
             return `<h${size}>${text}</h${size}>`;
         },
+        nvLabel : function(obj) {
+            var text = obj.text || "";
+            return `<label>${text}</text>`;
+        },
+        nvSpacer : function(obj) {
+            return '<p></p>';
+        },
         nvParagraph : function(obj) {
             var text = obj.text;
             var headerText = "";
             if (obj.header) {
-                headerText = `<h4>${obj.header}</h4>`;
+                headerText = `<label>${obj.header}</label>`;
             }
             return `${headerText}<p>${text}</p>`;
         },
@@ -102,6 +109,7 @@ Nave.registerLayouts("nvBase",
             var value = obj.value;
             var action = obj.action;
             var update = obj.update;
+            var rows = obj.rows || 2;
             var labelTag = "";
             if (label != "") {
                 labelTag = `<label>${label}</label>`;
@@ -113,7 +121,7 @@ Nave.registerLayouts("nvBase",
                 eventTag = `${event}="Nave.updateStateValue('${update}', this.value, false)"`
             }
             return `<div class="form-group">${labelTag}
-                        <textarea class="form-control" ${eventTag}>${value}</textarea>
+                        <textarea class="form-control" ${eventTag} rows="${rows}">${value}</textarea>
                     </div>`;            
               
         },
@@ -166,6 +174,36 @@ Nave.registerLayouts("nvBase",
                         </select>
                     </div>`            
         },
+        nvCheckbox : function(obj) {
+            var onchange = obj.onchange || "";
+            var label = obj.label || "";  
+            var labelTag = "";
+            var checked = obj.checked ? "checked" : "";
+            if (label != "") {
+                labelTag = `<label>${label}</label>`;
+                formGroupTag = "class='form-group'";
+            }
+            return `<div ${formGroupTag}>${labelTag}
+                        <input class="form-control" type="checkbox" 
+                        ${checked}
+                        onchange="${onchange}"
+                         />
+                    </div>`;
+        },
+        nvFile : function(obj) {
+            var onchange = obj.onchange || "";
+            var label = obj.label || "";
+            var labelTag = "";
+            if (label != "") {
+                labelTag = `<label>${label}</label>`;
+                formGroupTag = "class='form-group'";
+            }
+            return `<div ${formGroupTag}>${labelTag}
+                        <input class="form-control" type="file" 
+                        onchange="${onchange}"
+                         />
+                    </div>`
+        },
         nvTabs : function(obj) {
             var tabs = obj.tabs;
             var activeTab = obj.activeTab;
@@ -196,10 +234,10 @@ Nave.registerLayouts("nvBase",
         nvColumns : function(obj) {
             var columns = obj.columns;
             var columnText = Nave.reduce(columns, function(column, key) {
-                var header = column.header || "";
+                var header = column.colHeader || "";
                 var headerText = "";
                 if (header != "") {
-                    headerText = `<h3>${header}</h3>`;
+                    headerText = `<label>${header}</label>`;
                 }
                 return `<div class="col-xs-${column.width}">
                             ${headerText}
@@ -215,16 +253,16 @@ Nave.registerLayouts("nvBase",
             return ret;
         },
         nvList : function(obj) {
-            var header = obj.header || "";
+            var header = obj.header || obj.label || "";
             var list = obj.list;
             var valueParam = obj.valueParam;
             var headerText = "";
             if (header != "") {
-                headerText = `<h4>${header}</h4>`;
+                headerText = `<label>${header}</label>`;
             }
             return `${headerText}
                     <ul>    
-                        ${Nave.reduce(list, function(item, streetIndex) {
+                        ${Nave.reduce(list, function(item, index) {
                             if (valueParam) {
                                 item = item[valueParam];
                             }
@@ -258,6 +296,6 @@ Nave.registerLayouts("nvBase",
             })
         }
     }
-)
+})
 
 

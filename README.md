@@ -1,19 +1,24 @@
 # Nave - a small library for state-based Javascript applications
-
+## Goals
+I wrote Nave because I was tired of writing jQuery-based applications, but found Angular and React to be too much for what I was doing.  I liked the state-based architecture of React/Redux, and the idea of writing HTML-template components.  I wanted, as much as possible, to keep HTMl out of my code and even layout.  To that end Nave keeps all the HTML in layouts, which you then put together into pages by constructing standard javascript objects.
 ## State
-Nave is based around The State.  The state is a single Javascript object that contains everything about your application, including data, settings, user preferences – everything.  
+Nave is based around The State.  The state is a single Javascript object that contains everything about your application, including data, settings, user preferences – everything.    
 ### Setting State
-State can only be set as a single entity – you cannot set a single piece of the application state directly.  The usual workflow is:
-•	Request a copy of the application’s current state from Nave.  (In practice, we often use Actions, which get state passed to them so you do not need to explicitly request it – more on that later).
-•	Make changes to that state copy.
-•	Send the whole state back to Nave, and Nave will update the page.
-## Installation
-To enable Nave, include the Nave.js file in your HTML page.  You will probably also want to include NaveBaseLayouts.js to take advantage of the default layouts, and NaveBaseServices.js if you want to use the built in services such as LocalStorage and Firebase.
-## Usage
-Most Nave applications will use:
+State can only be passed to Nave as a single, monolithic entity – you cannot set a single piece of the application state directly.  The usual workflow is:
+    - Request a copy of the application’s current state from Nave.  (In practice, we often use Actions, which get state passed to them so you do not need to explicitly request state – more on that later).
+    - Make changes to that state copy.
+    - Send the whole state back to Nave, and Nave will update The Page based on the new state.
+## Page
+The Page is the translation of the application state to the application UI. It is represented in code as a single javascript object.  Each node in the object represents a page element, which will be rendered in the browser.
+## Components
+The 2 most important components of a Nave application are the State and the Page.  Nave defines several other components as well:
+* State 
+
+   The single object that contains all data relevant to the application.
+
 * Layouts
 
-   Layouts return snippets of HTML code that are used to build your page.  A layout takes a single object and returns HTML based on the properties of that object. 
+   Layouts return snippets of HTML code that are used to build your page.  A layout takes a single object node and returns HTML based on the properties of that object node. 
    
 * Pages
 
@@ -32,6 +37,11 @@ Most Nave applications will use:
    Listeners are notified by Nave whenever a new State is passed in.  Generally Listeners are used to persist state to local storage or to some offsite storage whenever the state changes.
    
 * Init  
+
+When the browser document is ready, you can start the Nave application by setting an initial state.  
+
+## Installation
+To enable Nave, include the Nave.js file in your HTML page.  You will probably also want to include NaveBaseLayouts.js to take advantage of the default layouts, NaveBaseActions.js to use default actions, and NaveBaseServices.js if you want to use the built in services such as LocalStorage and Firebase.
 ## Pages
 Multiple Pages can be registered in your Nave application.  You tell Nave which page you want to render by setting a particular value in the State object:
 ```javascript
@@ -53,7 +63,7 @@ More on pages after we learn about layouts.
 ## Layouts
 
 ### Registering Layouts
-Layouts are registered using the registerLayout function.  A Layout is an object that consists of multiple functions.  Each function takes a single argument, which is an object with multiple properties.  The Layout returns a piece of HTML based on those properties.
+Layouts are registered using the registerLayout function.  A Layout is an object that consists of multiple functions, or function that returns an object containing multiple functions.  Each function takes a single argument, which is an object with multiple properties.  The Layout returns a piece of HTML based on those properties.
 
 For instance, here is a layout to return a piece of text in a header:
 

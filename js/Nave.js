@@ -101,18 +101,24 @@ var Nave = (function() {
         },
         checkReRender : function(path) {
             var oldState = history[history.length - 1];
-            if (!oldState) { return true; } 
+            // always rerender if there is no old state
+            if (!oldState) { return true; }
+            // if path is a function, call it with old and new state to determine the outcome
+            if (path instanceof Function) {
+                return path(oldState, state);
+            } 
+            // otherwise, evaluate the expressions passed in
             var oldProps = "";
             var props = "";
             if (path instanceof Array) {
                 var oldPropsArr = Nave.map(path, function(item) {
                     return "oldState." + item;
                 })
-                oldProps = oldPropsArr.join(" + ");
+                oldProps = eval(oldPropsArr.join(" + "));
                 var propsArr = Nave.map(path, function(item) {
                     return "state." + item;
                 })
-                props = propsArr.join(" + "); 
+                props = eval(propsArr.join(" + ")); 
             } else {
                 oldProps = eval('oldState.' + path);
                 props = eval('state.' + path);                
@@ -234,6 +240,24 @@ var Nave = (function() {
                     callback(obj[key], key, index);
                 })                
             }
+        },
+        filter : function(obj, callback) {
+            var ret = {};
+            if (obj instanceof Array) {
+                var ret = [];
+                obj.forEach(function(item, index) {
+                    if (callback(item, index)) {
+                        ret.push(item);
+                    }
+                })
+            } else {
+                Object.keys(obj).forEach(function(key, index) {
+                    if (callback(obj[key], key, index)) {
+                        ret[key] = obj[key];
+                    }
+                })
+            }  
+            return ret;
         },
         map : function(obj, callback) {
             if (obj instanceof Array) {

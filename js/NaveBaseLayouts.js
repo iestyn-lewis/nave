@@ -130,6 +130,7 @@ Nave.registerLayouts("nvBase", function() {
             var keyParam = obj.keyParam;
             var valueParam = obj.valueParam;
             var emptyOption = obj.emptyOption || "";
+            var emptyValue = obj.emptyValue || "";
             var selectedCompare = obj.selectedCompare;
             var values = obj.values;
             var event = obj.event || "onchange";
@@ -149,7 +150,7 @@ Nave.registerLayouts("nvBase", function() {
             }
             var emptyTag = "";
             if (emptyOption) {
-                emptyTag = `<option value="">${emptyOption}</option>`;
+                emptyTag = `<option value="${emptyValue}">${emptyOption}</option>`;
             }
             var options = ""
             if (values) {
@@ -162,7 +163,7 @@ Nave.registerLayouts("nvBase", function() {
                     var caption = option[valueParam];
                     var selected = "";
                     if (selectedCompare) {
-                        selected = selectedCompare == value ? "selected" : "";                
+                        selected = selectedCompare == value ? "selected" : "";               
                     }
                     return `<option value="${value}" ${selected}>${caption}</option>`; 
                 });                
@@ -178,7 +179,7 @@ Nave.registerLayouts("nvBase", function() {
             var onchange = obj.onchange || "";
             var label = obj.label || "";  
             var labelTag = "";
-            var checked = obj.checked ? "checked" : "";
+            var checked = (obj.checked && obj.checked != "false") ? "checked" : "";
             if (label != "") {
                 labelTag = `<label>${label}</label>`;
                 formGroupTag = "class='form-group'";
@@ -230,6 +231,22 @@ Nave.registerLayouts("nvBase", function() {
                     <div class="tab-content">
                         ${tabItems}
                     </div>`;
+        },
+        nvPages : function(obj) {
+            // switch pages in response to clicking
+            var pages = obj.pages;
+            var activePage = obj.activePage;
+            var nav = Nave.reduce(pages, function(page, key) {
+                var active = key == activePage;
+                var link = "";
+                var activeText = "";
+                if (active) {
+                    activeText = 'class="active"'
+                } 
+                link = `<a href="#" onclick="Nave.actions('nvBase').setPage('${key}'); return false;">${page.name}</a>`;
+                return `<li ${activeText}>${link}</li>`;
+            })  
+            return `<nav><ul class="pagination">${nav}</ul></nav>`;
         },
         nvColumns : function(obj) {
             var columns = obj.columns;

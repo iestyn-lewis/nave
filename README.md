@@ -264,7 +264,8 @@ Directly after, we include the Nave libraries, and our own libraries:
     <script type="text/javascript" src="js/init.js"></script>
 ```
 
-```page.js```
+`page.js`
+
 In this file we register a page with Nave:
 
 ```javascript
@@ -292,7 +293,7 @@ nvParagraph : function(obj) {
 ```
 This function returns the snippet of HTML that will be rendered to the page, paramaterized with the text and optional header text.
 
-```init.js```
+`init.js`
 
 In this file we construct our initial state, and pass it to Nave:
 

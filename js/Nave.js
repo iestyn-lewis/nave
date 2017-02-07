@@ -92,7 +92,7 @@ var Nave = (function() {
                     targetDiv.show();
                 } else {
                     targetDiv.attr("nv-hidden", "true");
-                    targetDiv.hide();
+                    targetDiv.hide();                    
                 }
             }
             // return html string
@@ -189,9 +189,12 @@ var Nave = (function() {
         },
         // Calling setState triggers a re-render.  
         setState : function(newState) {
-            history.push(state);
+            // Keeping full history was causing crashes with large state objects
+            history[0] = state;
+            //history.push(state);
             state = newState;
-            console.log("State", state);
+            // logging state also causes crashes with large states
+            // console.log("State", state);
             Nave.renderPage(state.nave.page);
             Nave.each(m_listeners, function(listener) {
                 listener(state);

@@ -54,7 +54,7 @@ Nave.registerLayouts("nvBase", function() {
                 return Nave.renderObject(item, element, margin);
             })
             if (obj.title) {
-                ret = `<h3>${obj.title}</h3>` + ret;
+                ret = `<label>${obj.title}</label>` + ret;
             }
             return ret;
         },
@@ -90,7 +90,8 @@ Nave.registerLayouts("nvBase", function() {
             if (action) {
                 eventTag = `${event}="${action}"`
             } else if (update) {
-                eventTag = `${event}="Nave.updateStateValue('${update}', this.value, false)"`
+                var numericTag = numeric ? "true" : "false";
+                eventTag = `${event}="Nave.updateStateValue('${update}', this.value, ${numericTag})"`
             }
             return `<div ${formGroupTag}>${labelTag}
                         <input class="form-control" type="${inputType}" 
@@ -132,6 +133,7 @@ Nave.registerLayouts("nvBase", function() {
             var emptyOption = obj.emptyOption || "";
             var emptyValue = obj.emptyValue || "";
             var selectedCompare = obj.selectedCompare;
+            var extraOptions = obj.extraOptions;
             var values = obj.values;
             var event = obj.event || "onchange";
             var action = obj.action;
@@ -152,6 +154,12 @@ Nave.registerLayouts("nvBase", function() {
             if (emptyOption) {
                 emptyTag = `<option value="${emptyValue}">${emptyOption}</option>`;
             }
+            var extraOptionsTag = "";
+            if (extraOptions) {
+                extraOptionsTag = Nave.reduce(extraOptions, function(option) {
+                    return `<option value="${option.value}">${option.display}</option>`;
+                })
+            }
             var options = ""
             if (values) {
                 options = Nave.reduce(values, function(option, key) {
@@ -171,12 +179,14 @@ Nave.registerLayouts("nvBase", function() {
             return  `<div class="form-group">${labelTag}
                         <select class="form-control" size="${size}" ${eventTag}>
                             ${emptyTag}
+                            ${extraOptionsTag}
                             ${options}
                         </select>
                     </div>`            
         },
         nvCheckbox : function(obj) {
-            var onchange = obj.onchange || "";
+            var onchange = obj.onchange;
+            var update = obj.update;
             var label = obj.label || "";  
             var labelTag = "";
             var checked = (obj.checked && obj.checked != "false") ? "checked" : "";
@@ -184,10 +194,16 @@ Nave.registerLayouts("nvBase", function() {
                 labelTag = `<label>${label}</label>`;
                 formGroupTag = "class='form-group'";
             }
+            var eventTag = "";
+            if (onchange) {
+                eventTag = `onchange="${onchange}"`
+            } else if (update) {
+                eventTag = `onchange="Nave.updateStateValue('${update}', this.checked, true)"`
+            }
             return `<div ${formGroupTag}>${labelTag}
                         <input class="form-control" type="checkbox" 
                         ${checked}
-                        onchange="${onchange}"
+                        ${eventTag}
                          />
                     </div>`;
         },
@@ -201,6 +217,7 @@ Nave.registerLayouts("nvBase", function() {
             }
             return `<div ${formGroupTag}>${labelTag}
                         <input class="form-control" type="file" 
+                        onclick="this.value=null;"
                         onchange="${onchange}"
                          />
                     </div>`
@@ -210,15 +227,15 @@ Nave.registerLayouts("nvBase", function() {
             var activeTab = obj.activeTab;
              // activeTab
             // tabs - each an object with caption, component
-            var navItems = Nave.reduce(tabs, function(tab, key) {
-                var active = key == activeTab ? "active" : "";
+            var navItems = Nave.reduce(tabs, function(tab) {
+                var active = tab.id == activeTab ? "active" : "";
                 return `<li role="presentation" class="${active}">
-                            <a href="#${key}_tab" role="tab" data-toggle="tab">${tab.caption}</a>
+                            <a href="#${tab.id}_tab" role="tab" data-toggle="tab">${tab.caption}</a>
                         </li>`;  
             })
-            var tabItems = Nave.reduce(tabs, function(tab, key) {
-                var active = key == activeTab ? "active" : "";
-                return `<div role="tabpanel" class="tab-pane fade ${active} in" id="${key}_tab">
+            var tabItems = Nave.reduce(tabs, function(tab) {
+                var active = tab.id == activeTab ? "active" : "";
+                return `<div role="tabpanel" class="tab-pane fade ${active} in" id="${tab.id}_tab">
                             <div class="col-xs-12">
                                 <p>
                                 ${Nave.renderObject(tab)}
@@ -253,10 +270,11 @@ Nave.registerLayouts("nvBase", function() {
             var columnText = Nave.reduce(columns, function(column, key) {
                 var header = column.colHeader || "";
                 var headerText = "";
+                var width = column.colWidth || column.width;
                 if (header != "") {
                     headerText = `<label>${header}</label>`;
                 }
-                return `<div class="col-xs-${column.width}">
+                return `<div class="col-xs-${width}">
                             ${headerText}
                             ${Nave.renderObject(column)}
                         </div>`;
@@ -311,6 +329,19 @@ Nave.registerLayouts("nvBase", function() {
             return Nave.reduce(cols, function(col, index) {
                 return `<td>${Nave.renderObject(col)}</td>`;
             })
+        },
+        nvWait : function(obj) {
+            var message = obj.message || "Please wait...";
+            return `<div style="
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(255,255,255,.9);
+                        text-align: center;
+                        line-height: 100px;
+                    "><label>${message}</label></div>`
         }
     }
 })

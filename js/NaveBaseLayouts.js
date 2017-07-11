@@ -36,9 +36,54 @@ Nave.registerLayouts("nvBase", function() {
             }
             return `${headerText}<p>${text}</p>`;
         },
+        nvImage : function(obj) {
+            var src = obj.src;
+            var width = obj.width;
+            return `<img class="center-block" src="img/${src}" width=${width} />`
+        },
+        nvFA : function(obj) {
+            var image = obj.image;
+            var classname = obj.classname || "";
+            var magnify = obj.magnify || 0;
+            var pushdown = obj.pushdown;
+            var magnifyTextArr = ["", "fa-lg", "fa-2x", "fa-3x", "fa-4x", "fa-5x"];
+            var magnifyText = magnifyTextArr[magnify];
+            var center = obj.center;
+            var centerText = "";
+            if (center) {centerText = "text-center";}
+            var ret = `<span class="fa fa-${image} ${classname} ${magnifyText}"></span>`;
+            if (center) {
+                ret = `<p class="text-center">${ret}</p>`
+            }
+            if (pushdown) {
+                ret = `<br><br>${ret}`;
+            }
+            return ret;
+        },
         nvButton : function(obj) {
-            var classname = obj.classname;
-            var onclick = obj.onclick
+            var classname = obj.classname || "btn";
+            var color = obj.color;
+            if (color) {
+                var c = "btn-default"
+                switch(color) {
+                    case 'green':
+                        c = "btn-success"
+                        break;
+                    case 'red':
+                        c = "btn-danger"
+                        break;
+                    case 'yellow':
+                        c = "btn-warning";
+                        break;
+                    case 'blue':
+                        c = "btn-info";
+                        break;
+                    default:
+                        c = "btn-default";
+                }
+                classname = "btn btn-sm " + c;
+            }
+            var onclick = obj.action || obj.onclick;
             var text = obj.text;
             return `<button class="${classname}"
                             onclick="${onclick}">
@@ -53,16 +98,12 @@ Nave.registerLayouts("nvBase", function() {
             var ret = Nave.reduce(form, function(item) {
                 return Nave.renderObject(item, element, margin);
             })
-            if (obj.title) {
-                ret = `<label>${obj.title}</label>` + ret;
-            }
             return ret;
         },
         nvInput : function(obj) {
             var label = obj.label || "";
             var value = obj.value;
             var action = obj.action;
-            var cancel = obj.cancel;
             var update = obj.update;
             var event = obj.event || "onchange";
             var numeric = obj.numeric || false;
@@ -107,7 +148,7 @@ Nave.registerLayouts("nvBase", function() {
         nvTextArea : function(obj) {
             var event = obj.event || "onchange";
             var label = obj.label || "";
-            var value = obj.value;
+            var value = obj.value || "";
             var action = obj.action;
             var update = obj.update;
             var rows = obj.rows || 2;
@@ -128,7 +169,7 @@ Nave.registerLayouts("nvBase", function() {
         },
         nvSelect : function(obj) {
             // label, onchange, options
-            var keyParam = obj.keyParam;
+            var keyParam = obj.keyParam || 'key';
             var valueParam = obj.valueParam;
             var emptyOption = obj.emptyOption || "";
             var emptyValue = obj.emptyValue || "";
@@ -163,12 +204,13 @@ Nave.registerLayouts("nvBase", function() {
             var options = ""
             if (values) {
                 options = Nave.reduce(values, function(option, key) {
-                    var option = values[key];
                     var value = key;
                     if (keyParam != 'key') {
                         value = option[keyParam]
                     }
-                    var caption = option[valueParam];
+                    var caption = option;
+                    if (valueParam)
+                        caption = option[valueParam];
                     var selected = "";
                     if (selectedCompare) {
                         selected = selectedCompare == value ? "selected" : "";               
@@ -224,17 +266,20 @@ Nave.registerLayouts("nvBase", function() {
         },
         nvTabs : function(obj) {
             var tabs = obj.tabs;
+            var headers = obj.headers;
             var activeTab = obj.activeTab;
              // activeTab
-            // tabs - each an object with caption, component
-            var navItems = Nave.reduce(tabs, function(tab) {
-                var active = tab.id == activeTab ? "active" : "";
+            // tabs - each an object with header, component
+            var navItems = Nave.reduce(tabs, function(tab, index) {
+                var header = headers[index];
+                var active = header == activeTab ? "active" : "";
                 return `<li role="presentation" class="${active}">
-                            <a href="#${tab.id}_tab" role="tab" data-toggle="tab">${tab.caption}</a>
+                            <a href="#${tab.id}_tab" role="tab" data-toggle="tab">${header}</a>
                         </li>`;  
             })
-            var tabItems = Nave.reduce(tabs, function(tab) {
-                var active = tab.id == activeTab ? "active" : "";
+            var tabItems = Nave.reduce(tabs, function(tab, index) {
+                var header = headers[index];
+                var active = header == activeTab ? "active" : "";
                 return `<div role="tabpanel" class="tab-pane fade ${active} in" id="${tab.id}_tab">
                             <div class="col-xs-12">
                                 <p>
@@ -266,15 +311,19 @@ Nave.registerLayouts("nvBase", function() {
             return `<nav><ul class="pagination">${nav}</ul></nav>`;
         },
         nvColumns : function(obj) {
+            var headers = obj.headers;
+            var widths = obj.widths;
             var columns = obj.columns;
-            var columnText = Nave.reduce(columns, function(column, key) {
-                var header = column.colHeader || "";
+            var colclassname = obj.colclassname || "";
+            console.log(colclassname);
+            var columnText = Nave.reduce(columns, function(column, index) {
+                var header = headers ? headers[index] : "";
                 var headerText = "";
-                var width = column.colWidth || column.width;
                 if (header != "") {
                     headerText = `<label>${header}</label>`;
                 }
-                return `<div class="col-xs-${width}">
+                var width = widths ? widths[index] : 12;
+                return `<div class="col-xs-${width} ${colclassname}">
                             ${headerText}
                             ${Nave.renderObject(column)}
                         </div>`;
@@ -282,9 +331,6 @@ Nave.registerLayouts("nvBase", function() {
             var ret = `<div class="row">
                             ${columnText}
                        </div>`;
-            if (obj.title) {
-                ret = `<h3>${obj.title}</h3>` + ret;
-            }
             return ret;
         },
         nvList : function(obj) {
@@ -329,6 +375,26 @@ Nave.registerLayouts("nvBase", function() {
             return Nave.reduce(cols, function(col, index) {
                 return `<td>${Nave.renderObject(col)}</td>`;
             })
+        },
+        nvPanel : function(obj) {
+            var header = obj.header;
+            var headerSize = obj.headerSize;
+            var content = obj.content;
+            var headerText = "";
+            if (header) {
+                if (headerSize) {
+                    headerText = `<h${headerSize}>${header}</h${headerSize}>`;
+                } else {
+                    headerText = header;
+                }
+                headerText = `<div class="panel-heading">${headerText}</div>`;
+            }
+            return `<div class="panel panel-default">
+                      ${headerText}
+                      <div class="panel-body">
+                        ${Nave.renderObject(content)}
+                      </div>
+                    </div>`;
         },
         nvWait : function(obj) {
             var message = obj.message || "Please wait...";

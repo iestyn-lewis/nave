@@ -96,7 +96,9 @@ var Nave = (function() {
                 }
             }
             // return html string
-            ret = '<' + element + ' ' + id + ' ' + nvHide + ' ' + style + '>' + ret + '</' + element + '>';
+            if (element != 'none') {
+                ret = '<' + element + ' ' + id + ' ' + nvHide + ' ' + style + '>' + ret + '</' + element + '>';
+            }
             return ret;              
         },
         checkReRender : function(path) {
@@ -194,7 +196,7 @@ var Nave = (function() {
             //history.push(state);
             state = newState;
             // logging state also causes crashes with large states
-            // console.log("State", state);
+            console.log("State", state);
             Nave.renderPage(state.nave.page);
             Nave.each(m_listeners, function(listener) {
                 listener(state);
@@ -244,6 +246,23 @@ var Nave = (function() {
                 })                
             }
         },
+        indexOf : function(obj, callback) {
+            var ret = 0;
+            if (obj instanceof Array) {
+                obj.forEach(function(item, index) {
+                    if (callback(item, index)) {
+                        ret = index;
+                    }
+                })
+            } else {
+                Object.keys(obj).forEach(function(key, index) {
+                    if (callback(obj[key], key, index)) {
+                        ret = index;
+                    }
+                })
+            }  
+            return ret;
+        },
         filter : function(obj, callback) {
             var ret = {};
             if (obj instanceof Array) {
@@ -291,6 +310,7 @@ var Nave = (function() {
         },
         merge : function(obj1, obj2) {
             if (obj1 instanceof Array) {
+                var ret = [];
                 Nave.each(obj1, function(item) {
                     ret.push(item);
                 })

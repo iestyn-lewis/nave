@@ -1,22 +1,26 @@
 $(document).ready(function() {
-   // In the init section, we want to create or load our initial state, and 
-   // then start Nave by calling setState. 
-
-   // Create a blank state object -  just the required nave object with the required page value,
-   // and an empty array of todos.  
+   // Starting state  
    var state =  {
         nave: {
-            page: 'todo'
+            page: 'boxes'
         },
-        todos: []
+        drawings: [
+            {
+                name: "Test Drawing",
+                numRows: 1,
+                numColumns: 2
+            }
+        ],
+        currDrawing: 0,
+        mode: 'run'
     };
 
     // check to see if we have any saved state from a previous session
     // We included the basic service library, which includes a service
     // for localStorage
    var local = Nave.services('local');
-   if (local.exists('todo_state')) {
-       state = local.get('todo_state');
+   if (local.exists('boxes_state')) {
+       state = local.get('boxes_state');
    }
 
    // pass our new or saved state to Nave for processing

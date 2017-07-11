@@ -1,6 +1,6 @@
 # Nave - a small library for state-based Javascript applications
 ## Goals
-I wrote Nave because I was tired of writing jQuery-based applications, but found Angular and React to be too much for what I was doing.  I liked the state-based architecture of React/Redux, and the idea of writing HTML-template components.  I wanted, as much as possible, to keep HTMl out of my code and even layout.  To that end Nave keeps all the HTML in layouts, which you then put together into pages by constructing standard javascript objects.
+I wrote Nave because I was tired of writing jQuery-based applications, but found Angular and React to be too much for what I was doing.  I liked the state-based architecture of React/Redux, and the idea of writing HTML-template components.  I wanted, as much as possible, to keep HTMl out of my code and layout.  To that end Nave keeps all the HTML in "layouts", which are components that are put together into pages by constructing standard javascript objects.
 ## State
 Nave is based around The State.  The state is a single Javascript object that contains everything about your application, including data, settings, user preferences – everything.    
 ### Setting State
